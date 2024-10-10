@@ -98,6 +98,30 @@ def page():
             chat_input()
             display_conversations()
 
+def display_conversations():
+    state = me.state(State)
+    for conversation in state.conversations:
+        with me.box(style=me.Style(margin=me.Margin(bottom=24))):
+            me.text(f"Model: {conversation.model}", style=me.Style(font_weight=500))
+            for message in conversation.messages:
+                display_message(message)
+
+def display_message(message: ChatMessage):
+    style = me.Style(
+        padding=me.Padding.all(12),
+        border_radius=8,
+        margin=me.Margin(bottom=8),
+    )
+    if message.role == "user":
+        style.background = "#e7f2ff"
+    else:
+        style.background = "#ffffff"
+
+    with me.box(style=style):
+        me.markdown(message.content)
+        if message.in_progress:
+            me.progress_spinner()
+
 def header():
     with me.box(
         style=me.Style(
@@ -167,30 +191,6 @@ def chat_input():
 def on_blur(e: me.InputBlurEvent):
     state = me.state(State)
     state.input = e.value
-
-def display_conversations():
-    state = me.state(State)
-    for conversation in state.conversations:
-        with me.box(style=me.Style(margin=me.Margin(bottom=24))):
-            me.text(f"Model: {conversation.model}", style=me.Style(font_weight=500))
-            for message in conversation.messages:
-                display_message(message)
-
-def display_message(message: ChatMessage):
-    style = me.Style(
-        padding=me.Padding.all(12),
-        border_radius=8,
-        margin=me.Margin(bottom=8),
-    )
-    if message.role == "user":
-        style.background = "#e7f2ff"
-    else:
-        style.background = "#ffffff"
-
-    with me.box(style=style):
-        me.markdown(message.content)
-        if message.in_progress:
-            me.progress_spinner()
 
 def send_prompt(e: me.ClickEvent):
     state = me.state(State)
